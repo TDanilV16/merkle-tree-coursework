@@ -1,8 +1,9 @@
 package merkle
 
 import (
-	"merkleTree/internal/merkletree"
 	"testing"
+
+	"github.com/TDanilV16/merkle-tree-coursework/internal/merkletree"
 )
 
 func TestAdd(t *testing.T) {
