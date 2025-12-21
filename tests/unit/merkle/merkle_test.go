@@ -1,0 +1,14 @@
+package merkle
+
+import (
+	"merkleTree/internal/merkletree"
+	"testing"
+)
+
+func TestAdd(t *testing.T) {
+	want := 5
+	actual, err := merkletree.Add(2, 3)
+	if want != actual || err != nil {
+		t.Errorf("Add() error = (%v,%v), want (%v,%v)", err, actual, want, err)
+	}
+}
