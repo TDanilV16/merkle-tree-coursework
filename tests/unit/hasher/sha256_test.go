@@ -11,5 +11,5 @@ import (
 func TestSha256Hasher_Init(t *testing.T) {
 	_ = hasher.NewSha256Hasher()
 
-	assert.True(1 == 1)
+	assert.True(t, 1 == 1)
 }
