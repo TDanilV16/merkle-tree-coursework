@@ -1,6 +1,7 @@
 package hasher
 
 import (
+	"bytes"
 	"crypto/sha256"
 	"io"
 	"os"
@@ -56,7 +57,7 @@ func (h *Sha256Hasher) HashConcat(left, right Hash) Hash {
 	leftBytes := left.Bytes()
 	rightBytes := right.Bytes()
 
-	if left.Size() > right.Size() {
+	if bytes.Compare(leftBytes, rightBytes) > 0 {
 		leftBytes, rightBytes = rightBytes, leftBytes
 	}
 
