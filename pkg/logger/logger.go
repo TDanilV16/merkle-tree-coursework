@@ -11,7 +11,21 @@ import (
 
 var logger *slog.Logger
 
-func SetupFromConfig(cfg *config.Config) {
+type Logger struct {
+	*slog.Logger
+}
+
+func Default() *Logger {
+	logger = slog.New(slog.NewTextHandler(os.Stdout, nil))
+	slog.SetDefault(logger)
+	return &Logger{}
+}
+
+func SetupFromConfig(cfg *config.Config) *Logger {
+	if cfg == nil {
+		return Default()
+	}
+
 	var level slog.Level
 
 	switch cfg.Logging.Level {
@@ -53,7 +67,39 @@ func SetupFromConfig(cfg *config.Config) {
 	logger = slog.New(handler)
 	slog.SetDefault(logger)
 
-	logger.Info("Logger initialized")
+	return &Logger{}
+}
+
+func (l *Logger) Info(ctx context.Context, msg string, args ...any) {
+	logger.Log(ctx, slog.LevelInfo, msg, args...)
+}
+
+func (l *Logger) Infof(ctx context.Context, format string, args ...any) {
+	l.Info(ctx, fmt.Sprintf(format, args...))
+}
+
+func (l *Logger) Debug(ctx context.Context, msg string, args ...any) {
+	logger.Log(ctx, slog.LevelDebug, msg, args...)
+}
+
+func (l *Logger) Debugf(ctx context.Context, format string, args ...any) {
+	l.Debug(ctx, fmt.Sprintf(format, args...))
+}
+
+func (l *Logger) Warn(ctx context.Context, msg string, args ...any) {
+	logger.Log(ctx, slog.LevelWarn, msg, args...)
+}
+
+func (l *Logger) Warnf(ctx context.Context, format string, args ...any) {
+	l.Warn(ctx, fmt.Sprintf(format, args...))
+}
+
+func (l *Logger) Error(ctx context.Context, msg string, args ...any) {
+	logger.Log(ctx, slog.LevelError, msg, args...)
+}
+
+func (l *Logger) Errorf(ctx context.Context, format string, args ...any) {
+	l.Error(ctx, fmt.Sprintf(format, args...))
 }
 
 func shortenPath(path string) string {
@@ -70,36 +116,4 @@ func shortenPath(path string) string {
 		}
 	}
 	return path
-}
-
-func Info(ctx context.Context, msg string, args ...any) {
-	logger.Log(ctx, slog.LevelInfo, msg, args...)
-}
-
-func Infof(ctx context.Context, format string, args ...any) {
-	Info(ctx, fmt.Sprintf(format, args...))
-}
-
-func Debug(ctx context.Context, msg string, args ...any) {
-	logger.Log(ctx, slog.LevelDebug, msg, args...)
-}
-
-func Debugf(ctx context.Context, format string, args ...any) {
-	Debug(ctx, fmt.Sprintf(format, args...))
-}
-
-func Warn(ctx context.Context, msg string, args ...any) {
-	logger.Log(ctx, slog.LevelWarn, msg, args...)
-}
-
-func Warnf(ctx context.Context, format string, args ...any) {
-	Warn(ctx, fmt.Sprintf(format, args...))
-}
-
-func Error(ctx context.Context, msg string, args ...any) {
-	logger.Log(ctx, slog.LevelError, msg, args...)
-}
-
-func Errorf(ctx context.Context, format string, args ...any) {
-	Error(ctx, fmt.Sprintf(format, args...))
 }

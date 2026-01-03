@@ -2,6 +2,6 @@ app:
   name: "merkle-coursework"
   debug: true
 logging:
-  level: "info"
+  level: "debug"
   format: "json"
   add_source: true
