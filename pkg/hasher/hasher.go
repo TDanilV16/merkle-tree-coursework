@@ -3,6 +3,7 @@ package hasher
 import (
 	"bytes"
 	"crypto/sha256"
+	"fmt"
 	"io"
 	"os"
 )
@@ -12,7 +13,8 @@ type Hasher interface {
 	HashFile(filepath string) (Hash, error)
 	VerifyHash(hash Hash, data []byte) bool
 	HashString(str string) Hash
-	HashConcat(left, right Hash) Hash
+	HashConcat(left, right Hash) (Hash, error)
+	EmptyHash() Hash
 }
 
 type Sha256Hasher struct{}
@@ -53,7 +55,23 @@ func (h *Sha256Hasher) HashString(str string) Hash {
 	return h.Hash([]byte(str))
 }
 
-func (h *Sha256Hasher) HashConcat(left, right Hash) Hash {
+func (h *Sha256Hasher) HashConcat(left, right Hash) (Hash, error) {
+	if left == nil || right == nil {
+		return nil, fmt.Errorf("one hash is nil")
+	}
+
+	if left.Size() != 32 || right.Size() != 32 {
+		return nil, fmt.Errorf("hashes size mismatch: left=%d, right=%d", left.Size(), right.Size())
+	}
+
+	if left.IsZero() {
+		return nil, fmt.Errorf("left hash is zero: not a valid hash")
+	}
+
+	if right.IsZero() {
+		return nil, fmt.Errorf("right hash is zero: not a valid hash")
+	}
+
 	leftBytes := left.Bytes()
 	rightBytes := right.Bytes()
 
@@ -65,5 +83,8 @@ func (h *Sha256Hasher) HashConcat(left, right Hash) Hash {
 	combined = append(combined, leftBytes...)
 	combined = append(combined, rightBytes...)
 
-	return h.Hash(combined)
+	return h.Hash(combined), nil
+}
+func (h *Sha256Hasher) EmptyHash() Hash {
+	return h.Hash([]byte{})
 }

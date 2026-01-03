@@ -116,18 +116,23 @@ func TestSha256Hasher_HashConcat(t *testing.T) {
 	left := h.Hash([]byte("left"))
 	right := h.Hash([]byte("right"))
 
-	parent := h.HashConcat(left, right)
-	if parent.Size() != 32 {
+	parent, err := h.HashConcat(left, right)
+	if err != nil || parent.Size() != 32 {
 		t.Errorf("HashConcat() must return 32 hashes got %d", parent.Size())
 	}
 
-	parent2 := h.HashConcat(left, right)
-	if !parent.Equal(parent2) {
+	parent2, _ := h.HashConcat(left, right)
+	if err != nil || !parent.Equal(parent2) {
 		t.Error("HashConcat() must be determined")
 	}
 
-	parentReversed := h.HashConcat(right, left)
-	if !parent.Equal(parentReversed) {
+	parentReversed, err := h.HashConcat(right, left)
+	if err != nil || !parent.Equal(parentReversed) {
 		t.Error("HashConcat() must be commutative")
+	}
+
+	_, err = h.HashConcat(left, nil)
+	if err == nil {
+		t.Error("HashConcat() should throw an error if one part is empty")
 	}
 }

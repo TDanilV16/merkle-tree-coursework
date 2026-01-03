@@ -52,5 +52,10 @@ func (h *hashImpl) Size() int {
 }
 
 func (h *hashImpl) IsZero() bool {
-	return h.Size() == 0
+	for _, b := range h.bytes {
+		if b != 0 {
+			return false
+		}
+	}
+	return true
 }
