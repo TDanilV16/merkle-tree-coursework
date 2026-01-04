@@ -29,5 +29,6 @@ jobs:
       - name: Build
         run: go build -v ./...
 
+      # TODO add new command for tests in all directories
       - name: Tests
         run: go test -v ./tests/...
