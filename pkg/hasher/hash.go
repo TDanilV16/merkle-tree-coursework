@@ -11,6 +11,7 @@ type Hash interface {
 	Equal(other Hash) bool
 	Size() int
 	IsZero() bool
+	StringShort(length int) string
 }
 
 func NewHash(data []byte) Hash {
@@ -58,4 +59,12 @@ func (h *hashImpl) IsZero() bool {
 		}
 	}
 	return true
+}
+
+func (h *hashImpl) StringShort(length int) string {
+	if h.Size() > length {
+		return h.String()[:length] + "..."
+	}
+
+	return h.String()
 }
